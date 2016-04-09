@@ -3,9 +3,10 @@ Api
 """
 #import flask
 from flask import render_template, request, Flask, session, redirect, send_from_directory, jsonify, url_for
-from bd import DBConsults
+from database import DB
 import time
 import hashlib
+import fbsdk
 
 app = Flask(__name__)
 app.secret_key = "123456"
