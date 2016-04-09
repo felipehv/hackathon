@@ -2,8 +2,8 @@
 import sqlite3
 """
 Schema
-Evento(id: int, nombre: str, lugar: str, region_id: int, ciudad_id: int, admin_id: int)
-Users(id: int, username: str, hash_password: ?)
+Recetas()
+Users(fbId: int, username: string, hash_password: string)
 Favs(event_id: int, user_id: int)
 """
 
@@ -28,6 +28,7 @@ class DBConsults:
     def new_user(self,username,hashpass):
         if "," in username:
             return False
+
         users_list = self.c.execute("""SELECT username from Users where username != "{}" """.format(username)).fetchall()
         max_id = self.c.execute("""SELECT MAX(id) from Users""").fetchone()[0]
         max_id += 1
