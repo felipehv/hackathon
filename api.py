@@ -36,7 +36,7 @@ def signup():
     if request.method == "POST":
         #db = DBConsults()
         user = request.form["user"]
-        password = request.form["password"].encode()
+        password = request.url_forrm["password"].encode()
         fbtoken = request.form["fbtoken"]
         #get_fb_id()
         password = hashlib.md5(password).hexdigest()
