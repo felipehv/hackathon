@@ -1,51 +1,52 @@
 #Funciones para la base de datos
 import sqlite3
-"""
-Schema
-Recetas()
-Users(fbId: int, username: string, hash_password: string)
-Favs(event_id: int, user_id: int)
-"""
+
+"""has(userid int, ingredient varchar(20), PRIMARY KEY(userid, ingredient)) """
+""" recipes (recid int, name varchar(20), n int, ingredients varchar(255), pic varchar(20), PRIMARY KEY(recid))''') """
+'''users (userid int, username varchar(20), password varchar(20), PRIMARY KEY(userid))'''
 
 class DBConsults:
     def __init__(self):
-        self.connection = sqlite3.connect("./maindb.db")
+        self.connection = sqlite3.connect("./1.db")
         self.c = self.connection.cursor()
 
     def close(self):
         self.connection.close()
 
     def get_user_id(self,username):
-        user_id = self.c.execute("""SELECT id from Users where username = "{}"; """.format(username)).fetchone()[0]
-        return user_id[0]
+        user_id = self.c.execute("""SELECT userid from Users where username = "{}"; """.format(username)).fetchone()[0]
+        return user_id
 
-    def get_fav_events(self,user_id):
-        #Obtener id de eventos
-
-        #Obtener eventos segun el id
+    def get_ingredients(self,user_id):
         pass
 
-    def new_user(self,username,hashpass):
+    def new_user(self,username,hashpass,fb_id):
         if "," in username:
             return False
+        #Evita sql injection
 
         users_list = self.c.execute("""SELECT username from Users where username != "{}" """.format(username)).fetchall()
-        max_id = self.c.execute("""SELECT MAX(id) from Users""").fetchone()[0]
-        max_id += 1
         if len(users_list) == 0:
             return False
-        tup = (max_id, username, hashpass)
+        tup = (fb_id, username, hashpass)
         add_user = self.c.execute("""INSERT into Users VALUES({},"{}","{}");""".format(*tup))
         self.connection.commit()
         return True
 
-    def create_event(self, nombre, lugar, region_id, ciudad_id, admin_id, descripcion):
-        pass
+    def add_match(self, username, ingredient):
+        user_id = self.get_user_id(username)
+        tup = user_id,ingredient
+        a = self.c.execute("""INSERT into has VALUES({},"{}");""".format(*tup))
+        self.connection.commit()
+        self.close()
+        return str(user_id)
 
-    def get_events(self):
-        events = self.c.execute("""SELECT * from """) 
+    def remove_match(self, username, ingredient):
+        user_id = self.get_user_id(username) #DELETE
+        #a = self.c.execute("""INSERT into Users VALUES({},{});""".format(*tup))
+        #self.connection.commit() 
 
 if __name__ == "__main__":
     a = DBConsults()
-    a.new_user("felipe","")
+    a.add_match("pipe","caca")
     a.close()
