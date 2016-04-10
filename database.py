@@ -11,11 +11,23 @@ class DB:
         self.db.commit()
         self.c.close()
 
-    def add_user(self, username, password):
-        userid = self.c.execute("SELECT MAX(userid) FROM users").fetchone()[0]
-        userid = int(userid) + 1
+    def check_log(self, username, password):
+        passw = self.c.execute(
+            "SELECT password from users where username = '{}'".format(username)).fetchone()
+        if passw:
+            passw = passw[0]
+            if passw == password:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def add_user(self, username, password, fbid):
+        # userid = self.c.execute("SELECT MAX(userid) FROM users").fetchone()[0]
+        # userid = int(userid) + 1
         self.c.execute(
-            "INSERT INTO users VALUES ({0}, '{1}','{2}')".format(userid, username, password))
+            "INSERT INTO users VALUES ({0}, '{1}','{2}')".format(int(fbid), username, password))
 
     def add_ingredient(self, userid, ingname):
         self.c.execute(
@@ -47,9 +59,28 @@ class DB:
             "SELECT userid from users where username = '{}'".format(username)).fetchone()[0]
         return int(user_id)
 
+    def get_user_ingredients(self, username):
+        ingredients = self.c.execute(
+            "SELECT ingredient, ingid from has,ingredients where userid = {} and ingredient = name".format(self.get_user_id(username))).fetchall()
+        ing = [(i[0], i[1]) for i in ingredients]
+        return ing
+
     def get_ingredientes(self):
         return self.c.execute("SELECT * FROM ingredients").fetchall()
 
-# db = DB()
+    def get_recipes(self):
+        return self.c.execute("SELECT recid,name from recipes")
+
+    def cook_recipe(self, username, rec_name):
+        mis_ing = [i[0] for i in self.get_user_ingredients(username)]
+        rec_ing = self.c.execute(
+            "SELECT ingredients from recipes where name='{}'".format(rec_name)).fetchone()[0]
+        rec_ing = rec_ing.split(",")
+        return mis_ing
+
+
+db = DB()
+print(db.cook_recipe("tamy", "Completo Italiano"))
 # db.add_user("jesse","j")
+# print(db.get_ingredients("tamy"))
 # db.close()
