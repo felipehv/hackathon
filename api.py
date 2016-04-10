@@ -1,7 +1,6 @@
 """
 Api
 """
-#import flask
 from socket import gethostname
 from flask import render_template, request, Flask, session, redirect, send_from_directory, jsonify, url_for, ext, Response
 from database import DB
@@ -9,6 +8,7 @@ import time
 import hashlib
 import fbsdk
 from json import dumps
+
 
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -37,24 +37,24 @@ def login(username, password):
     db = DB()
     ans = db.check_log(username, password)
     db.close()
-    return jsonify(result=ans)
+
+    resp = Response(dumps(ans), status=200, mimetype='application/json')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
 
 
 @app.route("/signup/<username>/<password>/<fbid>", methods=["GET"])
 def signup(username, password, fbid):
     if request.method == "GET":
         db = DB()
-        db.add_user(username, password, fbid)
+        send = db.add_user(username, password, fbid)
         db.close()
-        # user = request.form["user"]
-        # password = request.url_forrm["password"].encode()
-        # fbtoken = request.form["fbtoken"]
-        # get_fb_id()
-        #password = hashlib.md5(password).hexdigest()
-        # db.new_user(user,password)
-        # db.close()
-        #print(user, password)
-        return "1"
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
 """
@@ -81,25 +81,34 @@ def add_ingredient(username, ingredient):
         db = DB()
         db.add_ingredient(db.get_user_id(username), ingredient)
         db.close()
-        return "1"
+
+        send = 1
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
 @app.route("/remove_ingredient/<username>/<ingredient>", methods=["GET"])
 def remove_ingredient(username, ingredient):
     if request.method == "GET":
-        # username = request.form["username"]
-        # ing = reques.form["ingredient"]
+
         db = DB()
         db.del_ingredient(db.get_user_id(username), ingredient)
         db.close()
-        return "1"
+        send = 1
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
 @app.route("/get_user_ingredients/<username>", methods=["GET"])
 def get_user_ingredients(username):
     if request.method == "GET":
-        # username = request.form["username"]
-        # ing = reques.form["ingredient"]
+
         db = DB()
         ing = db.get_user_ingredients(username)
         send = [("./img/ingredients/{0}.jpg".format(i[1]), i[0])
@@ -111,29 +120,35 @@ def get_user_ingredients(username):
 
         return resp
 
-        #return jsonify(list=send)
 
-
-@app.route("/add_user/<username>/<password>", methods=["GET"])
-def add_user(username, password):
+@app.route("/add_user/<username>/<password>/<fbid>", methods=["GET"])
+def add_user(username, password, fbid):
     if request.method == "GET":
-        # username = request.form["username"]
-        # ing = reques.form["ingredient"]
+
         db = DB()
-        db.add_user(username, password)
+        db.add_user(username, password, fbid)
         db.close()
-        return jsonify(ans=1)
+
+        send = 1
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
-@app.route("/match_recipes/<id1>/<id2>", methods=["GET"])
-def match_recipes(id1, id2):
+@app.route("/match_recipes/<u1>/<u2>", methods=["GET"])
+def match_recipes(u1, u2):
     if request.method == "GET":
         db = DB()
-        #id1 = db.get_user_id(request.form["username1"])
-        #id2 = db.get_user_id(request.form["username2"])
-        recipes = db.match(id1, id2)
+        recipes = db.match(u1, u2)
         db.close()
-        return jsonify(lista=recipes)
+
+        resp = Response(
+            dumps(recipes), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
 @app.route("/get_ingredients/", methods=["GET"])
@@ -144,7 +159,11 @@ def get_ingredients():
         send = [("./img/ingredients/{0}.jpg".format(i[0]), i[1])
                 for i in ingredients]
         db.close()
-        return jsonify(lista=send)
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
 @app.route("/get_recipes/", methods=["GET"])
@@ -155,18 +174,44 @@ def get_recipes():
         send = [("./img/recipes/{0}.jpg".format(i[0]), i[1])
                 for i in recipes]
         db.close()
-        return jsonify(lista=send)
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
-@app.route("/cook_recipe/<username>/<rec_name>", methods=["GET"])
-def cook_recipe(username, rec_name):
+@app.route("/get_friends/<u>", methods=["GET"])
+def get_friends(u):
     if request.method == "GET":
         db = DB()
-        link = db.cook_recipe(username, rec_name)
+        send = db.get_friends(u)
         db.close()
-        return jsonify(result=link)
 
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
 
+        return resp
+
+@app.route("/get_pic/<u>", methods=["GET"])
+def get_pic(u):
+    if request.method == "GET":
+        db = DB()
+        send = db.get_pic(u)
+        db.close()
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
+
+# @app.route("/cook_recipe/<username>/<rec_name>", methods=["GET"])
+# def cook_recipe(username, rec_name):
+#     if request.method == "GET":
+#         db = DB()
+#         link = db.cook_recipe(username, rec_name)
+#         db.close()
+#         return jsonify(result=link)
 
 
 # @app.route("/recipes/<string:name>")
@@ -189,4 +234,4 @@ def send_img(path):
     return send_from_directory("img", path)
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=6969 , debug=True)
+    app.run(host="192.168.0.68", port=6969, debug=True)

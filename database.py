@@ -24,10 +24,14 @@ class DB:
             return False
 
     def add_user(self, username, password, fbid):
-        # userid = self.c.execute("SELECT MAX(userid) FROM users").fetchone()[0]
-        # userid = int(userid) + 1
-        self.c.execute(
-            "INSERT INTO users VALUES ({0}, '{1}','{2}')".format(int(fbid), username, password))
+        res = self.c.execute(
+            "SELECT username from users where username='{}'".format(username)).fetchone()
+        if not res:
+            self.c.execute("INSERT INTO users VALUES ({0}, '{1}','{2}')".format(
+                int(fbid), username, password))
+            return 1
+        else:
+            return 0
 
     def add_ingredient(self, userid, ingname):
         self.c.execute(
@@ -37,12 +41,13 @@ class DB:
         self.c.execute("DELETE FROM has WHERE userid={0} and ingredient='{1}'".format(
             int(userid), ingname))
 
-    def match(self, *ids):
+    def match(self, *users):
         recetas = []
         ingredients = []
-        for i in ids:
+        for i in users:
+            userid = self.get_user_id(i)
             ingredients.append(self.c.execute(
-                "SELECT has.ingredient FROM has WHERE userid={}".format(i)).fetchall())
+                "SELECT has.ingredient FROM has WHERE userid={}".format(userid)).fetchall())
         group_ingredients = []
         for i in ingredients:
             for j in i:
@@ -78,9 +83,17 @@ class DB:
         rec_ing = rec_ing.split(",")
         return mis_ing
 
+    def get_friends(self, username):
+        if username == "tamy":
+            return ["pipe", "benja"]
+        elif username == "pipe":
+            return ["tamy", "benja"]
+        else:
+            return ["tamy", "pipe"]
 
-db = DB()
-print(db.cook_recipe("tamy", "Completo Italiano"))
-# db.add_user("jesse","j")
-# print(db.get_ingredients("tamy"))
+    def get_pic(self, user):
+        return "./img/users/{}.jpg".format(user)
+
+# db = DB()
+# print(db.add_user("tamy", "Completo Italiano", 123478))
 # db.close()
