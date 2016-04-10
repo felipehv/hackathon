@@ -3,11 +3,17 @@ Api
 """
 #import flask
 from socket import gethostname
-from flask import render_template, request, Flask, session, redirect, send_from_directory, jsonify, url_for
+from flask import render_template, request, Flask, session, redirect, send_from_directory, jsonify, url_for, ext, Response
 from database import DB
 import time
 import hashlib
 import fbsdk
+from json import dumps
+
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    return response
 
 app = Flask(__name__)
 app.secret_key = "123456"
@@ -59,7 +65,7 @@ Errores de request
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('page_not_found.html'), 404
+    return "Error", 404
 
 
 """
@@ -99,7 +105,13 @@ def get_user_ingredients(username):
         send = [("./img/ingredients/{0}.jpg".format(i[1]), i[0])
                 for i in ing]
         db.close()
-        return jsonify(list=send)
+
+        resp = Response(dumps(send), status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
+
+        #return jsonify(list=send)
 
 
 @app.route("/add_user/<username>/<password>", methods=["GET"])
@@ -155,6 +167,8 @@ def cook_recipe(username, rec_name):
         return jsonify(result=link)
 
 
+
+
 # @app.route("/recipes/<string:name>")
 # def recipes_by_name(name):
 # TODO
@@ -175,4 +189,4 @@ def send_img(path):
     return send_from_directory("img", path)
 
 if __name__ == "__main__":
-    app.run(host="192.168.0.68", port=6970, debug=True)
+    app.run(host="localhost", port=6969 , debug=True)
