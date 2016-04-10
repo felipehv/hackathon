@@ -41,22 +41,45 @@ class DB:
         self.c.execute("DELETE FROM has WHERE userid={0} and ingredient='{1}'".format(
             int(userid), ingname))
 
-    def match(self, *users):
+    # def match(self, *users):
+    #     recetas = []
+    #     ingredients = []
+    #     for i in users:
+    #         userid = self.get_user_id(i)
+    #         ingredients.append(self.c.execute(
+    #             "SELECT has.ingredient FROM has WHERE userid={}".format(userid)).fetchall())
+    #     group_ingredients = []
+    #     for i in ingredients:
+    #         for j in i:
+    #             group_ingredients.append(j[0])
+    #     for j in self.c.execute("SELECT * FROM recipes"):
+    #         uses = j[3].split(",")
+    #         filtro = list(filter(lambda x: x not in group_ingredients, uses))
+    #         if len(filtro) == 0:
+    #             recetas.append((j[1], "./img/recipes/{}.jpg".format(j[0])))
+    #     return recetas
+
+    def match(self, user):
+        # (nombre,url,usuario_match)
+        friends = self.get_friends(user)
         recetas = []
-        ingredients = []
-        for i in users:
-            userid = self.get_user_id(i)
+        for i in friends:
+            ingredients = []
+            friendid = self.get_user_id(i)
+            userid = self.get_user_id(user)
             ingredients.append(self.c.execute(
-                "SELECT has.ingredient FROM has WHERE userid={}".format(userid)).fetchall())
-        group_ingredients = []
-        for i in ingredients:
-            for j in i:
-                group_ingredients.append(j[0])
-        for j in self.c.execute("SELECT * FROM recipes"):
-            uses = j[3].split(",")
-            filtro = list(filter(lambda x: x not in group_ingredients, uses))
-            if len(filtro) == 0:
-                recetas.append((j[1], "./img/recipes/{}.jpg".format(j[0])))
+                "SELECT has.ingredient FROM has WHERE userid={0} or userid={1}".format(friendid, userid)).fetchall())
+            group_ingredients = []
+            for k in ingredients:
+                for z in k:
+                    group_ingredients.append(z[0])
+            for j in self.c.execute("SELECT * FROM recipes"):
+                uses = j[3].split(",")
+                filtro = list(
+                    filter(lambda x: x not in group_ingredients, uses))
+                if len(filtro) == 0:
+                    recetas.append(
+                        (j[1], "img/recipes/{}.jpg".format(j[0]), i))
         return recetas
 
     def get_user_id(self, username):
@@ -92,8 +115,8 @@ class DB:
             return ["tamy", "pipe"]
 
     def get_pic(self, user):
-        return "./img/users/{}.jpg".format(user)
+        return "img/users/{}.jpg".format(user)
 
 # db = DB()
-# print(db.add_user("tamy", "Completo Italiano", 123478))
+# print(db.match("tamy"))
 # db.close()

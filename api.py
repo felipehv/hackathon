@@ -111,7 +111,7 @@ def get_user_ingredients(username):
 
         db = DB()
         ing = db.get_user_ingredients(username)
-        send = [("./img/ingredients/{0}.jpg".format(i[1]), i[0])
+        send = [("img/ingredients/{0}.jpg".format(i[1]), i[0])
                 for i in ing]
         db.close()
 
@@ -137,17 +137,30 @@ def add_user(username, password, fbid):
         return resp
 
 
-@app.route("/match_recipes/<u1>/<u2>", methods=["GET"])
-def match_recipes(u1, u2):
+# @app.route("/match_recipes/<u1>/<u2>", methods=["GET"])
+# def match_recipes(u1, u2):
+#     if request.method == "GET":
+#         db = DB()
+#         recipes = db.match(u1, u2)
+#         db.close()
+
+#         resp = Response(
+#             dumps(recipes), status=200, mimetype='application/json')
+#         resp.headers['Access-Control-Allow-Origin'] = '*'
+
+#         return resp
+
+@app.route("/match/<u1>", methods=["GET"])
+def match(u1):
     if request.method == "GET":
         db = DB()
-        recipes = db.match(u1, u2)
+        recipes = db.match(u1)
         db.close()
 
         resp = Response(
             dumps(recipes), status=200, mimetype='application/json')
         resp.headers['Access-Control-Allow-Origin'] = '*'
-
+        # (nombre,url,usuario_match)
         return resp
 
 
@@ -156,7 +169,7 @@ def get_ingredients():
     if request.method == "GET":
         db = DB()
         ingredients = db.get_ingredientes()
-        send = [("./img/ingredients/{0}.jpg".format(i[0]), i[1])
+        send = [("img/ingredients/{0}.jpg".format(i[0]), i[1])
                 for i in ingredients]
         db.close()
 
@@ -171,7 +184,7 @@ def get_recipes():
     if request.method == "GET":
         db = DB()
         recipes = db.get_recipes()
-        send = [("./img/recipes/{0}.jpg".format(i[0]), i[1])
+        send = [("img/recipes/{0}.jpg".format(i[0]), i[1])
                 for i in recipes]
         db.close()
 
