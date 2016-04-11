@@ -25,15 +25,15 @@ class Generator:
         self.c.execute("INSERT INTO has VALUES (0,'Palta')")
         self.c.execute("INSERT INTO has VALUES (1, 'HotDog')")
         self.c.execute("INSERT INTO has VALUES (1, 'Mayonesa')")
-        self.c.execute("INSERT INTO has VALUES (2, 'Arroz')")
+        self.c.execute("INSERT INTO has VALUES (2, 'Pisco')")
         self.c.execute(
             "INSERT INTO recipes VALUES (0,'Completo Italiano', 3, 'Tomate,Palta,HotDog,Mayonesa')")
         self.c.execute(
-            "INSERT INTO recipes VALUES (1,'Pan con queso', 3, 'Pan,Queso')")
+            "INSERT INTO recipes VALUES (1,'Pan con queso', 3, 'Marraqueta,Queso')")
         self.c.execute(
             "INSERT INTO recipes VALUES (2,'Chorrillana', 3, 'Papas,Aceite,Huevos,Marraqueta,Bistecs')")
         self.c.execute(
-            "INSERT INTO recipes VALUES (3,'Pisco', 3, 'Pisco,Coca Cola')")
+            "INSERT INTO recipes VALUES (3,'Piscola', 3, 'Pisco,Coca Cola')")
 
     def close(self):
         self.db.commit()
