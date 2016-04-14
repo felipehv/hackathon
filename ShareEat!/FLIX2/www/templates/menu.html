@@ -1,0 +1,30 @@
+<ion-side-menus enable-menu-with-back-views="false">
+    <ion-side-menu-content>
+        <ion-nav-bar class="bar-stable">
+            <ion-nav-back-button></ion-nav-back-button>
+            <ion-nav-buttons side="left">
+                <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+            </ion-nav-buttons>
+        </ion-nav-bar>
+        <ion-nav-view name="side-menu21"></ion-nav-view>
+    </ion-side-menu-content>
+    <ion-side-menu side="left" id="side-menu21" style="background-color:#FF5722;">
+        <ion-header-bar class="bar-stable">
+            <div class="title">Menu</div>
+        </ion-header-bar>
+        <ion-content padding="false" class="side-menu-left has-header">
+            <a ui-sref="menu.home" menu-close="" id="menu-button7" class="button button-light button-small button-block button-clear icon-left ion-android-home">GO Home, you're drunk</a>
+            <a style="display:inline-block;" ui-sref="menu.user" menu-close="">
+                <div style="text-align:center;">
+                    <img src="img/0rZcutF1QUIeCxylUsjg_bob_esponja.jpg" width="100%" height="auto">
+                </div>
+            </a>
+            <h1 id="menu-heading3" style="color:#FCF7F7;text-align:center;">User Name</h1>
+            <ion-list>
+                <ion-item ui-sref="menu.yourIngredients" menu-close="">Your Ingredients</ion-item>
+                <ion-item ui-sref="menu.friends" menu-close="">Friends</ion-item>
+                <ion-item ui-sref="menu.range" menu-close="">Set Range</ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-side-menu>
+</ion-side-menus>
